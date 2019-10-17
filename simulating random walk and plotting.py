@@ -46,19 +46,5 @@ def Plot_walk(n):
         plt.title('walking duck')
         
 fig = plt.figure()       
-ani = animation.FuncAnimation(fig,Plot_walk,frames=5,)
+ani = animation.FuncAnimation(fig,Plot_walk,frames=10)  # the frames somehow act like the number of steps
 plt.show()
-        
-    
-
-
-        
-    
-  
-    
-
-        
-        
-
-
-
