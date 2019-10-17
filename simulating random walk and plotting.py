@@ -4,14 +4,12 @@ Created on Tue Oct 15 22:52:53 2019
 simulating a random walk
 @author: LENOVO
 """
-import pandas as pd
+
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib.colors as col
 import random 
-from matplotlib.cm import get_cmap
-from matplotlib.colors import PowerNorm
+import matplotlib.animation as animation
+plt.style.use('fivethirtyeight')
 
 
 def Duck_walk(n,p,coordinates):
@@ -32,26 +30,27 @@ def Plot_walk(n):
     'plotting the simulated random walk'
     net_walks =[]
     for i in range(1,n+1):
-        
         #find the path
         path = Duck_walk(i,True,False)
         
         #seperate values x and y from path
         xs,ys =zip(*path)
-        x,y = Duck_walk(i,False,True)
+        
         #find net distance
+        x,y = Duck_walk(i,False,True)
         net_walk = abs(x) + abs(y)
         net_walks.append(net_walk)
-        
         #plot the results
         plt.plot(xs,ys)
         plt.grid(True)
         plt.title('walking duck')
-        plt.show()
+        
+fig = plt.figure()       
+ani = animation.FuncAnimation(fig,Plot_walk,frames=5,)
+plt.show()
         
     
-        
-Plot_walk(1000)
+
 
         
     
