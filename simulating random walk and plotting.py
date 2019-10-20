@@ -1,50 +1,101 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 15 22:52:53 2019
-simulating a random walk
-@author: LENOVO
-"""
-
+from matplotlib import cm
 import numpy as np
 import matplotlib.pyplot as plt
-import random 
+from numpy import random
 import matplotlib.animation as animation
 plt.style.use('fivethirtyeight')
 
 
-def Duck_walk(n,p,coordinates):
-    'simulating a random walk with n number of steps'
-    x,y = 0,0
-    path = []
+def Duck_walk(n,p = True,co= False,x=0 ,y=0):
+    '''simulating a random walk with n number of steps
+     p = true : return path
+     co = true: return final coordinates
+     x,y are the starting co-ordinates of the walk
+     '''
+    pos_x = x
+    pos_y = y
+     
+    path = [(pos_x,pos_y)]
     for i in range(n):
-        (dx,dy) = random.choice([(1,0),(0,1),(-1,0),(0,-1)])
-        x += dx
-        y += dy
-        path.append((x,y))
+        step = random.choice(['N','S','E','W'])
+        if step == 'N':
+            pos_y += 1
+            path.append((pos_x,pos_y))
+        if step == 'S':
+            pos_y -= 1       
+            path.append((pos_x,pos_y))
+        if step == 'E':
+            pos_x += 1
+            path.append((pos_x,pos_y))
+        if step == 'W':
+            pos_x -= 1
+            path.append((pos_x,pos_y))
     if p == True:
         return path
-    if coordinates == True:
+    if co == True:
         return (x,y)
+
+def anim(trials):
+    ''' function to be called by funcAnimation changing only trials
+        x,y initial coordinates of path_2
+        n: steps of path_1
+        n_2: steps of path_2
+        '''
+        
+    x=6
+    y=0
+    n=5
+    n_2=10
+    Find_intersect(x,y,n,n_2,trials)
+    print(trials)
+
+def Find_intersect(x,y,n=10,n_2=10,trials = 10):
+    ''' plot walk 1 n steps at origin 
+        plot walk 2 n_2 steps at x,y
+        find intersection points intersect =[]
+        count number of intersects: len(intersect)
+        '''
+    '''we are preparing the color array by normalizing trials'''
     
-def Plot_walk(n):
-    'plotting the simulated random walk'
-    net_walks =[]
-    for i in range(1,n+1):
-        #find the path
-        path = Duck_walk(i,True,False)
+    trial = [i for i in range(trials)]
+    tmin,tmax = min(trial),max(trial)
+    for i, val in enumerate(trial):
+          trial[i] = (val-tmin) / (tmax-tmin)
+          
+    intersects = []
+    
+    for i in trial:
         
-        #seperate values x and y from path
-        xs,ys =zip(*path)
-        
-        #find net distance
-        x,y = Duck_walk(i,False,True)
-        net_walk = abs(x) + abs(y)
-        net_walks.append(net_walk)
-        #plot the results
-        plt.plot(xs,ys)
+        path_1 =Duck_walk(n)
+        path_2 =Duck_walk(n_2,x=x,y=y)
+
+        color_1 = plt.cm.Purples(i)    
+        xs,ys = zip(*path_1)
+        plt.plot(xs,ys,color= color_1)
         plt.grid(True)
         plt.title('walking duck')
+    
+        color_2 = plt.cm.Wistia(i)    
+        xs,ys = zip(*path_2)
+        plt.plot(xs,ys,color= color_2)
+        plt.grid(True)
+        plt.title('Walking ducks')
         
-fig = plt.figure()       
-ani = animation.FuncAnimation(fig,Plot_walk,frames=10)  # the frames somehow act like the number of steps
+        for i_1 in path_1:
+            for i_2 in path_2:
+                if i_1 == i_2:
+                    intersects.append(i)
+    p_inter = (len(intersects)*100)/trials
+    print('the probability of two ducks meeting:')
+    print(p_inter,'%')
+        
+    
+    
+
+    
+t = [i for i in range(5,300,20)]
+    
+fig = plt.figure()
+anim = animation.FuncAnimation(fig,anim,frames=t,interval= 200)
 plt.show()
+anim.save('animation.gif', writer='imagemagick', fps=3)
